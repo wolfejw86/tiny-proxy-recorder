@@ -3,6 +3,7 @@ import { FastifyPluginAsync } from "fastify";
 const cache = new Map<string, any>();
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  // admin panel
   fastify.get("/webapp", async (request, reply) => {
     reply.type("text/html");
     return `<!DOCTYPE html>
@@ -24,6 +25,11 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
       reply.from(request.url, {
         onError(reply, error) {
           reply.send(error.error.message);
+        },
+        rewriteRequestHeaders(req, headers) {
+          console.log(headers.origin);
+          headers.origin = "https://fakestoreapi.com";
+          return headers;
         },
         onResponse: (request, reply, res) => {
           res.on("data", (chunk) => {
